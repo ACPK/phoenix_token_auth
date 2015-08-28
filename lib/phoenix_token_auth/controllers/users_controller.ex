@@ -28,7 +28,7 @@ defmodule PhoenixTokenAuth.Controllers.Users do
         user = Util.repo.insert!(changeset)
         Mailer.send_welcome_email(user, confirmation_token, conn)
       end do
-        {:ok, _} -> json conn, :ok
+        {:ok, user} -> json conn, %{access_token: Authenticator.generate_token_for(user), token_type: "bearer", id: user.id}
       end
     else
       Util.send_error(conn, Enum.into(changeset.errors, %{}))
